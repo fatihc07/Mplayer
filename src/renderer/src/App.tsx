@@ -854,28 +854,27 @@ export default function App(): JSX.Element {
           {audioEl}
           
           <div className="mp-lsq-header" style={{ 
-            height: 38, 
+            height: 36, 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'flex-end', 
-            padding: '0 8px', 
+            padding: '0 10px', 
             gap: 8, 
-            WebkitAppRegion: 'drag',  // This makes the header area draggable
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0) 100%)',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 100
+            WebkitAppRegion: 'drag', 
+            background: '#0a0a0a', // Solid dark background for clarity
+            borderBottom: '1px solid rgba(255,255,255,0.05)',
+            flexShrink: 0,
+            zIndex: 100,
+            color: '#ffffff'
           } as React.CSSProperties}>
-            <div style={{ display: 'flex', gap: 6, WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+            <div style={{ display: 'flex', gap: 6, WebkitAppRegion: 'no-drag', alignItems: 'center' } as React.CSSProperties}>
               <button
                 onClick={() => {
                   const ns = !lsqShowSettings;
                   setLsqShowSettings(ns);
                   window.api.setMiniExpanded(ns);
                 }}
-                style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.7 }}
+                style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.8, padding: 4 }}
                 title="Settings"
               >
                 <Settings size={14} />
