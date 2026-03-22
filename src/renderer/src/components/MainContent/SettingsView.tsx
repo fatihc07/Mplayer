@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useLibraryStore } from '../../stores/libraryStore'
 import { useI18n } from '../../i18n'
-import { Radio, CheckCircle, XCircle, Loader, ExternalLink, LogOut, Palette, Check, Globe, Download, Upload, HardDrive } from 'lucide-react'
+import { Radio, CheckCircle, XCircle, Loader, ExternalLink, LogOut, Palette, Check, Globe, Download, Upload, HardDrive, Maximize2 } from 'lucide-react'
 import { VERSIONS } from './VersionsView'
 
 const THEMES = [
@@ -170,7 +170,7 @@ export function SettingsView(): JSX.Element {
           </div>
           <div className="quick-switch" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
               <button 
-                className={`lang-btn ${useSettingsStore.getState().lockPlaybar ? 'active' : ''}`} // Corrected condition
+                className={`lang-btn ${useSettingsStore.getState().lockPlaybar ? 'active' : ''}`}
                 onClick={() => useSettingsStore.getState().setLockPlaybar(!useSettingsStore.getState().lockPlaybar)}
                 style={{ 
                   padding: '8px 16px', 
@@ -182,6 +182,37 @@ export function SettingsView(): JSX.Element {
                 } as React.CSSProperties}
               >
                 {useSettingsStore.getState().lockPlaybar ? 'LOCKED' : 'UNLOCKED'}
+              </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Auto Mini on Minimize ─────────────────────────────────── */}
+      <div className="settings-card">
+        <div className="settings-card-header">
+          <div className="settings-card-icon">
+            <Maximize2 size={20} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 className="settings-card-title">Auto Mini-Mode on Minimize</h3>
+            <p className="settings-card-desc">
+              Switch to the mini-player instead of hiding the window when minimized
+            </p>
+          </div>
+          <div className="quick-switch" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+              <button 
+                className={`lang-btn ${useSettingsStore.getState().autoMiniOnMinimize ? 'active' : ''}`}
+                onClick={() => useSettingsStore.getState().setAutoMiniOnMinimize(!useSettingsStore.getState().autoMiniOnMinimize)}
+                style={{ 
+                  padding: '8px 16px', 
+                  borderRadius: '8px',
+                  background: useSettingsStore.getState().autoMiniOnMinimize ? 'var(--c-accent)' : 'rgba(255,255,255,0.05)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer'
+                } as React.CSSProperties}
+              >
+                {useSettingsStore.getState().autoMiniOnMinimize ? 'ON' : 'OFF'}
               </button>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Search, Moon, Bell, Minus, Square, X, Clock } from 'lucide-react'
 import { useLibraryStore } from '../../stores/libraryStore'
 import { usePlayerStore } from '../../stores/playerStore'
+import { useSettingsStore } from '../../stores/settingsStore'
 import { SearchResult } from '../../types'
 import { CoverArt } from '../shared/CoverArt'
 
@@ -203,7 +204,18 @@ export function TopBar(): JSX.Element {
           <span>M</span>
         </div>
         <div className="window-controls">
-          <button className="wc-btn wc-min" onClick={() => window.api.minimize()}><Minus size={11} /></button>
+          <button 
+            className="wc-btn wc-min" 
+            onClick={() => {
+              if (useSettingsStore.getState().autoMiniOnMinimize) {
+                window.api.toggleMiniPlayer();
+              } else {
+                window.api.minimize();
+              }
+            }}
+          >
+            <Minus size={11} />
+          </button>
           <button className="wc-btn wc-max" onClick={() => window.api.maximize()}><Square size={10} /></button>
           <button className="wc-btn wc-close" onClick={() => window.api.close()}><X size={11} /></button>
         </div>

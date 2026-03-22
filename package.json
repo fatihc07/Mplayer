@@ -1,6 +1,6 @@
 {
   "name": "mplayer",
-  "version": "1.18.9",
+  "version": "1.18.10",
   "description": "High-performance local music player with statistics – handles 10,000+ songs",
   "main": "out/main/index.js",
   "scripts": {

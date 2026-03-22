@@ -323,7 +323,29 @@ export function setupIpcHandlers(): void {
   ipcMain.handle('settings:set', (_, key: string, value: string) => setAppSetting(key, value))
 
   // ── Window controls ───────────────────────────────────────────────────────
-  ipcMain.handle('window:minimize', (e) => BrowserWindow.fromWebContents(e.sender)?.minimize())
+  ipcMain.handle('window:minimize', async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    if (!win) return
+    const autoMini = await getAppSetting('autoMiniOnMinimize')
+    if (autoMini) {
+      // Toggle mini player instead of minimize
+      // This logic replicates window:toggleMini but for minimization event
+      if (!isMiniPlayer) {
+        isMiniPlayer = true
+        currentMiniMode = await getAppSetting('lastMiniMode') || 'default'
+        normalBounds = win.getBounds()
+        const sz = MINI_SIZES[currentMiniMode] || MINI_SIZES.default
+        win.setMinimumSize(sz.w, sz.h)
+        win.setSize(sz.w, sz.h)
+        win.setAlwaysOnTop(true, 'floating')
+        win.webContents.send('mini:changed', true, currentMiniMode)
+      } else {
+        win.minimize() // If already mini, then regular minimize
+      }
+    } else {
+      win.minimize()
+    }
+  })
   ipcMain.handle('window:maximize', (e) => {
     const w = BrowserWindow.fromWebContents(e.sender)
     w?.isMaximized() ? w.unmaximize() : w?.maximize()
@@ -503,7 +525,7 @@ export function setupIpcHandlers(): void {
       win.webContents.send('mini:changed', false, 'default')
     } else {
       isMiniPlayer = true
-      const savedMode = mode || getAppSetting('miniPlayerMode') || 'default'
+      const savedMode = mode || getAppSetting('lastMiniMode') || 'default'
       currentMiniMode = savedMode
       normalBounds = win.getBounds()
       const sz = MINI_SIZES[currentMiniMode] || MINI_SIZES.default

@@ -43,7 +43,10 @@ export default function App(): JSX.Element {
     setProgress, setDuration, setIsPlaying, nextSong, prevSong, pauseResume,
     incrementCurrentPlayCount, seekTo, toggleMute, setVolume, toggleFavoriteCurrentSong
   } = usePlayerStore()
-  const { connected: lfmConnected, loadStatus: loadLfmStatus, lyricsFontSize, lyricsColor, setLyricsFontSize, setLyricsColor } = useSettingsStore()
+  const { 
+    connected: lfmConnected, loadStatus: loadLfmStatus, lyricsFontSize, lyricsColor, 
+    setLyricsFontSize, setLyricsColor, lastMiniMode, setLastMiniMode, autoMiniOnMinimize 
+  } = useSettingsStore()
   const audioRef        = useRef<HTMLAudioElement>(null)
   const loadedIdRef     = useRef<number | null>(null)
   const seekTargetRef   = useRef<number>(-1)
@@ -95,14 +98,16 @@ export default function App(): JSX.Element {
     })
   }, [])
 
-  // Mini player event listener
   useEffect(() => {
     const unsub = window.api.onMiniPlayerChange((isMini, mode) => {
       setIsMiniPlayer(isMini)
-      if (isMini && mode) setMiniMode(mode as MiniMode)
+      // When switching to mini, if no explicit mode from main, use store's last mode
+      if (isMini) {
+        setMiniMode((mode as MiniMode) || (lastMiniMode as MiniMode) || 'default')
+      }
     })
     return unsub
-  }, [])
+  }, [lastMiniMode])
 
   useEffect(() => {
     const unsub = window.api.onMiniModeChange((mode) => setMiniMode(mode as MiniMode))
@@ -459,6 +464,7 @@ export default function App(): JSX.Element {
           const selected = await window.api.showMiniModeMenu();
           if (selected) {
             setMiniMode(selected as MiniMode);
+            setLastMiniMode(selected as string);
             window.api.setMiniMode(selected);
           }
         }}
@@ -727,9 +733,9 @@ export default function App(): JSX.Element {
               <button className="mp-card-play" onClick={pauseResume}>
                 {isPlaying ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" />}
               </button>
-              <button onClick={nextSong}><SkipForward size={20} fill="currentColor" /></button>
             </div>
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -783,6 +789,7 @@ export default function App(): JSX.Element {
               </button>
             </div>
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -977,6 +984,7 @@ export default function App(): JSX.Element {
             {restoreBtn}
           </div>
         </div>
+        {miniSettingsEl}
         {miniPanelEl}
       </div>
     )
