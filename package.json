@@ -10,6 +10,7 @@
     "prebuild:win": "node scripts/bump-version.js",
     "prebuild:mac": "node scripts/bump-version.js",
     "build:win": "npm run build && electron-builder --win --x64",
+    "git-sync": "powershell ./scripts/sync-github.ps1",
     "build:mac": "npm run build && electron-builder --mac --universal"
   },
   "build": {

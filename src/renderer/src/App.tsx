@@ -50,6 +50,7 @@ export default function App(): JSX.Element {
   const countedRef      = useRef<boolean>(false)
   const scrobbledRef    = useRef<boolean>(false)
   const songStartTsRef  = useRef<number>(Date.now())
+  const lastSeekTsRef   = useRef<number>(0)
   const [lyricsOpen, setLyricsOpen] = useState(false)
   const [fullLyricsOpen, setFullLyricsOpen] = useState(false)
   const [queueOpen, setQueueOpen] = useState(false)
@@ -293,6 +294,7 @@ export default function App(): JSX.Element {
       if (!audio) return
       if (Math.abs(seekTargetRef.current - state.progress) > 0.2) {
         audio.currentTime = state.progress
+        lastSeekTsRef.current = Date.now()
         // If store says playing but audio paused (e.g. repeat-one via manual next), restart
         if (state.isPlaying && audio.paused) {
           audio.play().catch(() => {})
@@ -307,6 +309,10 @@ export default function App(): JSX.Element {
     const audio = e.currentTarget
     const t = audio.currentTime
     const dur = audio.duration
+    
+    // Ignore updates for a short moment after manual seek to avoid jitter
+    if (Date.now() - lastSeekTsRef.current < 500) return
+
     seekTargetRef.current = t   // keep ref in sync with playback
     setProgress(t)
 
@@ -844,7 +850,7 @@ export default function App(): JSX.Element {
       const activeIdx = activeLyricIdx;
 
       return (
-        <div className="app-root mini-mode mini-lyrics-square" style={{ background: '#000000', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', WebkitAppRegion: 'drag', position: 'relative' } as React.CSSProperties}>
+        <div className="app-root mini-mode mini-lyrics-square" style={{ background: '#000000', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' } as React.CSSProperties}>
           {audioEl}
           
           <div className="mp-lsq-header" style={{ 
@@ -854,8 +860,8 @@ export default function App(): JSX.Element {
             justifyContent: 'flex-end', 
             padding: '0 8px', 
             gap: 8, 
-            WebkitAppRegion: 'drag', 
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)',
+            WebkitAppRegion: 'drag',  // This makes the header area draggable
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0) 100%)',
             position: 'absolute',
             top: 0,
             left: 0,
