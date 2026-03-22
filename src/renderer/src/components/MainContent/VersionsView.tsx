@@ -442,6 +442,19 @@ export const VERSIONS: VersionEntry[] = [
       'Mini Player: Shared font and color settings for all lyrics modes',
     ]
   },
+  {
+    version: '1.19.0',
+    date: '2026-03-22',
+    tag: 'minor',
+    features: [
+      'Mini Player: Persistent mode selection — app remembers and restores your last used mini-player mode',
+      'Mini Player: "Auto Mini-Mode on Minimize" feature — switch to mini-player automatically when minimizing',
+      'Mini Player: Unified Global Lyrics Customization — font size and color settings applied to all 8 modes',
+      'Mini Player: Quick Settings (gear icon) added to Card, Visual, and Controls modes for easy access',
+      'Data Backup: Settings and lyrics offsets are now fully included in Export/Import (Insert or Replace merge)',
+      'UI: Fixed missing audio controls and menus across various mini-player modes',
+    ]
+  },
 ]
 
 const TAG_COLORS: Record<string, string> = {

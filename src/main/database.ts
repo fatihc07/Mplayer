@@ -2075,9 +2075,9 @@ export function importFullBackup(backup: any): { success: boolean; stats: Record
     stats.lyrics_cache = count
   }
 
-  // App settings (merge, don't overwrite)
+  // App settings (restore from backup)
   if (data.app_settings?.length) {
-    const stmt = d.prepare(`INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)`)
+    const stmt = d.prepare(`INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)`)
     let count = 0
     for (const s of data.app_settings) { stmt.run([s.key, s.value]); count++ }
     stmt.free()
