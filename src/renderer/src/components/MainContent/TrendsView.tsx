@@ -4,13 +4,14 @@ import { useLibraryStore } from '../../stores/libraryStore'
 import { usePlayerStore } from '../../stores/playerStore'
 import { Song } from '../../types'
 import { CoverArt } from '../shared/CoverArt'
-import { AddToPlaylistBtn } from '../shared/AddToPlaylistBtn'
 import { showSongContextMenu } from '../shared/SongContextMenu'
 import { formatDuration, formatPlays } from '../../utils/format'
+import { useI18n } from '../../i18n'
 
 export function TrendsView(): JSX.Element {
   const { trending, recent, songs, artists, loadSongs, toggleFavorite, loadHistory, history, setArtistDetail } = useLibraryStore()
   const { playSong, currentSong } = usePlayerStore()
+  const { t } = useI18n()
   const [heroIdx, setHeroIdx] = useState(0)
   const [recentScroll, setRecentScroll] = useState(0)
 
@@ -19,12 +20,14 @@ export function TrendsView(): JSX.Element {
     if (!history.length) loadHistory(20, 0)
   }, [])
 
-  // Hero: top played song
-  const heroSong = trending[heroIdx] ?? null
+  // Hero: top played artists (first 6)
+  const heroArtists = artists.slice(0, 6)
+  const heroArtist = heroArtists[heroIdx] ?? null
 
-  // Top 7 artists for the circular row
-  const topArtists = artists.slice(0, 7)
-  const remainingArtists = Math.max(0, artists.length - 7)
+  // Top artists circular row - show up to 15 to fill space
+  const displayLimit = 15
+  const topArtistsList = artists.slice(0, displayLimit)
+  const remainingArtists = Math.max(0, artists.length - displayLimit)
 
   // Recently played from history (unique songs)
   const recentPlayed = useMemo(() => {
@@ -42,7 +45,7 @@ export function TrendsView(): JSX.Element {
   // Most played songs (top 6)
   const mostPlayed = trending.slice(0, 6)
 
-  const heroNext = () => setHeroIdx(i => Math.min(i + 1, Math.min(trending.length - 1, 5)))
+  const heroNext = () => setHeroIdx(i => Math.min(i + 1, heroArtists.length - 1))
   const heroPrev = () => setHeroIdx(i => Math.max(0, i - 1))
 
   const playFromTrending = (song: Song) => playSong(song, trending, trending.indexOf(song))
@@ -53,32 +56,21 @@ export function TrendsView(): JSX.Element {
       <div className="trv2-main">
         {/* Hero Banner */}
         <div className="trv2-hero">
-          {heroSong ? (
-            <div className="trv2-hero-card" onClick={() => playFromTrending(heroSong)}>
+          {heroArtist ? (
+            <div className="trv2-hero-card" onClick={() => setArtistDetail(heroArtist.name)}>
               <CoverArt
-                songPath={heroSong.path}
-                hasCover={!!heroSong.has_cover}
+                songPath={heroArtist.cover_path || ''}
+                hasCover={!!heroArtist.cover_path}
                 className="trv2-hero-bg"
                 asBackground
               />
               <div className="trv2-hero-overlay" />
               <div className="trv2-hero-content">
-                <h1 className="trv2-hero-title">{heroSong.artist}</h1>
+                <h1 className="trv2-hero-title">{heroArtist.name}</h1>
                 <p className="trv2-hero-sub">
                   <Play size={12} fill="currentColor" />
-                  {heroSong.play_count > 0
-                    ? `${heroSong.play_count.toLocaleString('en-US')} Plays`
-                    : heroSong.title}
+                  {heroArtist.total_plays.toLocaleString()} {t.plays}
                 </p>
-              </div>
-              <div className="trv2-hero-actions" onClick={e => e.stopPropagation()}>
-                <button
-                  className={`trv2-hero-fav${heroSong.is_favorite ? ' active' : ''}`}
-                  onClick={() => toggleFavorite(heroSong.id)}
-                >
-                  <Heart size={18} fill={heroSong.is_favorite ? 'currentColor' : 'none'} />
-                </button>
-                <AddToPlaylistBtn songId={heroSong.id} size={18} />
               </div>
               {/* Hero nav arrows */}
               <button className="trv2-hero-nav left" onClick={e => { e.stopPropagation(); heroPrev() }}>
@@ -89,7 +81,7 @@ export function TrendsView(): JSX.Element {
               </button>
               {/* Dots */}
               <div className="trv2-hero-dots">
-                {trending.slice(0, 6).map((_, i) => (
+                {heroArtists.map((_, i) => (
                   <button
                     key={i}
                     className={`trv2-dot${i === heroIdx ? ' active' : ''}`}
@@ -100,20 +92,20 @@ export function TrendsView(): JSX.Element {
             </div>
           ) : (
             <div className="trv2-hero-card trv2-hero-empty">
-              <p>Music library is empty</p>
-              <p className="sub">Use "Add Folder" in the bottom left to get started</p>
+              <p>{t.emptyLibrary}</p>
+              <p className="sub">{t.addFolderHint}</p>
             </div>
           )}
         </div>
 
         {/* Top Artists Row */}
-        {topArtists.length > 0 && (
+        {topArtistsList.length > 0 && (
           <section className="trv2-section">
             <h2 className="trv2-section-title">
-              <span className="trv2-accent">Most</span> Played Artists
+              <span className="trv2-accent">{t.most}</span> {t.played} {t.artists}
             </h2>
             <div className="trv2-artists-row">
-              {topArtists.map(artist => (
+              {topArtistsList.map(artist => (
                 <div key={artist.name} className="trv2-artist-item" onClick={() => setArtistDetail(artist.name)}>
                   <div className="trv2-artist-avatar">
                     {artist.cover_path ? (
@@ -138,7 +130,7 @@ export function TrendsView(): JSX.Element {
                   <div className="trv2-artist-avatar trv2-artist-more">
                     +{remainingArtists}
                   </div>
-                  <span className="trv2-artist-name">More</span>
+                  <span className="trv2-artist-name">{t.more}</span>
                 </div>
               )}
             </div>
@@ -149,7 +141,7 @@ export function TrendsView(): JSX.Element {
         {mostPlayed.length > 0 && (
           <section className="trv2-section">
             <h2 className="trv2-section-title">
-              <span className="trv2-accent">Most</span> Played
+              <span className="trv2-accent">{t.most}</span> {t.played}
             </h2>
             <div className="trv2-mp-grid">
               {mostPlayed.map((song, i) => (
@@ -178,7 +170,7 @@ export function TrendsView(): JSX.Element {
         {/* Recent Played Cards */}
         <section className="trv2-section">
           <h2 className="trv2-section-title">
-            <span className="trv2-accent">Recently</span> Played
+            <span className="trv2-accent">{t.recently}</span> {t.played}
           </h2>
           <div className="trv2-recents-wrap">
             <div className="trv2-recents" style={{ transform: `translateX(-${recentScroll * 220}px)` }}>

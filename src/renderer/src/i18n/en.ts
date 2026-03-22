@@ -131,5 +131,15 @@ export const en: typeof tr = {
   confirm: 'Confirm',
   search: 'Search...',
   loading: 'Loading...',
-  resetConfirm: 'All play history and counts will be reset. Are you sure?'
+  resetConfirm: 'All play history and counts will be reset. Are you sure?',
+
+  // Trends v2
+  mostPlayedArtists: 'Most Played Artists',
+  recentPlayed: 'Recently Played',
+  most: 'Most',
+  recently: 'Recently',
+  played: 'Played',
+  more: 'More',
+  emptyLibrary: 'Music library is empty',
+  addFolderHint: 'Use "Add Folder" in the bottom left to get started'
 }

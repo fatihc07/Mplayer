@@ -129,5 +129,15 @@ export const tr = {
   confirm: 'Onayla',
   search: 'Ara...',
   loading: 'Yükleniyor...',
-  resetConfirm: 'Tüm dinlenme geçmişi ve play count\'lar sıfırlanacak. Emin misin?'
+  resetConfirm: 'Tüm dinlenme geçmişi ve play count\'lar sıfırlanacak. Emin misin?',
+  
+  // Trends v2
+  mostPlayedArtists: 'En Çok Dinlenen Sanatçılar',
+  recentPlayed: 'Son Çalınanlar',
+  most: 'En Çok',
+  recently: 'Son',
+  played: 'Dinlenenler',
+  more: 'Daha Fazla',
+  emptyLibrary: 'Müzik kütüphanesi boş',
+  addFolderHint: 'Başlamak için sol alttaki "Klasör Ekle"yi kullan'
 }
