@@ -43,7 +43,7 @@ export default function App(): JSX.Element {
     setProgress, setDuration, setIsPlaying, nextSong, prevSong, pauseResume,
     incrementCurrentPlayCount, seekTo, toggleMute, setVolume, toggleFavoriteCurrentSong
   } = usePlayerStore()
-  const { connected: lfmConnected, loadStatus: loadLfmStatus } = useSettingsStore()
+  const { connected: lfmConnected, loadStatus: loadLfmStatus, lyricsFontSize, lyricsColor, setLyricsFontSize, setLyricsColor } = useSettingsStore()
   const audioRef        = useRef<HTMLAudioElement>(null)
   const loadedIdRef     = useRef<number | null>(null)
   const seekTargetRef   = useRef<number>(-1)
@@ -63,10 +63,7 @@ export default function App(): JSX.Element {
   const lsqRef = useRef<HTMLDivElement>(null)
   const { loadLang } = useI18n()
 
-  // New Square Lyrics Mode Settings
-  const [lsqFontSize, setLsqFontSize] = useState<number>(20)
-  const [lsqColor, setLsqColor] = useState<string>('#ffffff')
-  const [lsqShowSettings, setLsqShowSettings] = useState(false)
+  const [miniShowSettings, setMiniShowSettings] = useState(false)
 
   // Mini player lyrics state
   const [miniLyricLines, setMiniLyricLines] = useState<{ time: number; text: string }[]>([])
@@ -438,6 +435,21 @@ export default function App(): JSX.Element {
       </button>
     )
 
+    const settingsBtn = (
+      <button
+        className={`mini-panel-btn${miniShowSettings ? ' active' : ''}`}
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        onClick={() => {
+          const ns = !miniShowSettings;
+          setMiniShowSettings(ns);
+          window.api.setMiniExpanded(ns);
+        }}
+        title="Lyrics Settings"
+      >
+        <Settings size={13} />
+      </button>
+    )
+
     const modeBtn = (
       <button
         className="mini-mode-btn"
@@ -556,6 +568,20 @@ export default function App(): JSX.Element {
       </div>
     )
 
+    const miniSettingsEl = miniShowSettings && (
+      <div className="mp-lsq-settings" style={{ position: 'absolute', top: 38, right: 8, background: '#1e1e2d', padding: 12, borderRadius: 8, zIndex: 110, WebkitAppRegion: 'no-drag', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 10px 20px rgba(0,0,0,0.4)', width: 140 } as React.CSSProperties}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#aaa', alignItems: 'center' }}>
+          <span>Lyrics Size</span>
+          <span style={{color:'#00ffd5'}}>{lyricsFontSize}px</span>
+        </div>
+        <input type="range" min="12" max="60" value={lyricsFontSize} onChange={e => setLyricsFontSize(Number(e.target.value))} style={{ cursor: 'pointer' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#aaa', alignItems: 'center', marginTop: 4 }}>
+          <span>Color</span>
+        </div>
+        <input type="color" value={lyricsColor} onChange={e => setLyricsColor(e.target.value)} style={{ width: '100%', height: 20, border: 'none', background: 'transparent' }} />
+      </div>
+    )
+
     // Active mini lyric line
     const miniLyricText = (() => {
       if (miniLyricLines.length === 0) return ''
@@ -623,13 +649,15 @@ export default function App(): JSX.Element {
               </div>
               {queueBtn}
               {searchBtn}
+              {settingsBtn}
               {modeBtn}
               {restoreBtn}
             </div>
             {miniLyricText && (
-              <div className="mini-default-lyric">{miniLyricText}</div>
+              <div className="mini-default-lyric" style={{ fontSize: lyricsFontSize, color: lyricsColor }}>{miniLyricText}</div>
             )}
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -641,25 +669,24 @@ export default function App(): JSX.Element {
         <div className="app-root mini-mode mini-pill">
           {audioEl}
           <div className="mp-pill" style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}>
-            {currentSong && (
-              <CoverArt songPath={currentSong.path} hasCover={!!currentSong.has_cover} size={44} className="mp-pill-cover" />
-            )}
             <div className="mp-pill-info">
-              <p className="mp-pill-title">{currentSong?.title || 'MPlayer'}</p>
-              {miniLyricText ? miniLyricEl : <p className="mp-pill-artist">{currentSong?.artist || ''}</p>}
+              {currentSong && (
+                <CoverArt songPath={currentSong.path} hasCover={!!currentSong.has_cover} size={44} className="mp-pill-cover" />
+              )}
+              <p className="mp-pill-text" style={{ fontSize: Math.min(lyricsFontSize, 18), color: lyricsColor }}>
+                {miniLyricText || (currentSong ? `${currentSong.artist} - ${currentSong.title}` : 'MPlayer')}
+              </p>
             </div>
-            <button
-              className="mp-pill-play"
-              style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-              onClick={pauseResume}
-            >
-              {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
-            </button>
-            {queueBtn}
-            {searchBtn}
-            {modeBtn}
-            {restoreBtn}
+            <div className="mp-pill-btns" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+              <button onClick={pauseResume}>
+                {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+              </button>
+              {settingsBtn}
+              {modeBtn}
+              {restoreBtn}
+            </div>
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -674,6 +701,7 @@ export default function App(): JSX.Element {
             <div className="mp-card-top-btns" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
               {queueBtn}
               {searchBtn}
+              {settingsBtn}
               {modeBtn}
               {restoreBtn}
             </div>
@@ -725,13 +753,14 @@ export default function App(): JSX.Element {
               </button>
               {queueBtn}
               {searchBtn}
+              {settingsBtn}
               {modeBtn}
               {restoreBtn}
             </div>
             {miniLyricPair.current ? (
-              <div className="mp-visual-lyrics">
+              <div className="mp-visual-lyrics" style={{ fontSize: lyricsFontSize, color: lyricsColor }}>
                 <div className="mp-visual-lyric-active">{miniLyricPair.current}</div>
-                {miniLyricPair.next && <div className="mp-visual-lyric-next">{miniLyricPair.next}</div>}
+                {miniLyricPair.next && <div className="mp-visual-lyric-next" style={{ fontSize: lyricsFontSize * 0.8 }}>{miniLyricPair.next}</div>}
               </div>
             ) : <div className="mp-visual-lyrics-spacer" />}
             <div className="mp-visual-content">
@@ -769,10 +798,9 @@ export default function App(): JSX.Element {
               <CoverArt songPath={currentSong.path} hasCover={!!currentSong.has_cover} size={36} className="mp-slim-cover" />
             )}
             <div className="mp-slim-info">
-              <p className="mp-slim-text">
-                {currentSong ? `${currentSong.artist} — ${currentSong.title}` : 'MPlayer'}
+              <p className="mp-slim-text" style={{ fontSize: Math.min(lyricsFontSize, 14), color: lyricsColor }}>
+                {miniLyricText || (currentSong ? `${currentSong.artist} — ${currentSong.title}` : 'MPlayer')}
               </p>
-              {miniLyricEl}
             </div>
             <div className="mp-slim-seek" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties} onClick={handleMiniProgressClick}>
               <div className="mp-slim-seek-fill" style={{ width: `${progressPct}%` }} />
@@ -783,10 +811,12 @@ export default function App(): JSX.Element {
               </button>
               {queueBtn}
               {searchBtn}
+              {settingsBtn}
               {modeBtn}
               {restoreBtn}
             </div>
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -809,16 +839,16 @@ export default function App(): JSX.Element {
             </div>
             <div className="mp-photo-right">
               <div className="mp-photo-top-btns" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
-                {modeBtn}{restoreBtn}
+                {settingsBtn}{modeBtn}{restoreBtn}
               </div>
               <div className="mp-photo-info">
                 <p className="mp-photo-title">{currentSong?.title || 'MPlayer'}</p>
                 <p className="mp-photo-artist">{currentSong?.artist || ''}</p>
               </div>
               {miniLyricContext.current ? (
-                <div className="mp-photo-lyrics">
-                  <p className="mp-photo-lyric-active">{miniLyricContext.current}</p>
-                  {miniLyricContext.next && <p className="mp-photo-lyric-next">{miniLyricContext.next}</p>}
+                <div className="mp-photo-lyrics" style={{ color: lyricsColor }}>
+                  <p className="mp-photo-lyric-active" style={{ fontSize: lyricsFontSize }}>{miniLyricContext.current}</p>
+                  {miniLyricContext.next && <p className="mp-photo-lyric-next" style={{ fontSize: lyricsFontSize * 0.8 }}>{miniLyricContext.next}</p>}
                 </div>
               ) : <div className="mp-photo-lyrics-spacer" />}
               <div className="mp-photo-progress" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties} onClick={handleMiniProgressClick}>
@@ -841,6 +871,7 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </div>
+          {miniSettingsEl}
           {miniPanelEl}
         </div>
       )
@@ -868,35 +899,13 @@ export default function App(): JSX.Element {
             color: '#ffffff'
           } as React.CSSProperties}>
             <div style={{ display: 'flex', gap: 6, WebkitAppRegion: 'no-drag', alignItems: 'center' } as React.CSSProperties}>
-              <button
-                onClick={() => {
-                  const ns = !lsqShowSettings;
-                  setLsqShowSettings(ns);
-                  window.api.setMiniExpanded(ns);
-                }}
-                style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.8, padding: 4 }}
-                title="Settings"
-              >
-                <Settings size={14} />
-              </button>
+              {settingsBtn}
               {modeBtn}
               {restoreBtn}
             </div>
           </div>
 
-          {lsqShowSettings && (
-            <div className="mp-lsq-settings" style={{ position: 'absolute', top: 32, right: 8, background: '#1e1e2d', padding: 12, borderRadius: 8, zIndex: 11, WebkitAppRegion: 'no-drag', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 10px 20px rgba(0,0,0,0.4)' } as React.CSSProperties}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#aaa', alignItems: 'center', gap: 20 }}>
-                <span>Font Size</span>
-                <span style={{color:'#fff'}}>{lsqFontSize}px</span>
-              </div>
-              <input type="range" min="12" max="48" value={lsqFontSize} onChange={e => setLsqFontSize(Number(e.target.value))} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#aaa', alignItems: 'center', marginTop: 8 }}>
-                <span>Color</span>
-              </div>
-              <input type="color" value={lsqColor} onChange={e => setLsqColor(e.target.value)} style={{ width: '100%', height: 24, border: 'none', background: 'transparent' }} />
-            </div>
-          )}
+          {miniSettingsEl}
 
           <div className="mp-lsq-lyrics-container" style={{ 
             flex: 1, 
@@ -922,9 +931,9 @@ export default function App(): JSX.Element {
                     margin: 0,
                     textAlign: 'center',
                     fontWeight: isCurrent ? 800 : 500,
-                    fontSize: isCurrent ? `${lsqFontSize + 6}px` : `${lsqFontSize}px`,
-                    color: isCurrent ? lsqColor : isPast ? `${lsqColor}66` : '#333344',
-                    textShadow: isCurrent ? `0 0 20px ${lsqColor}cc, 0 0 10px ${lsqColor}66` : 'none',
+                    fontSize: isCurrent ? `${lyricsFontSize + 6}px` : `${lyricsFontSize}px`,
+                    color: isCurrent ? lyricsColor : isPast ? `${lyricsColor}66` : '#333344',
+                    textShadow: isCurrent ? `0 0 20px ${lyricsColor}cc, 0 0 10px ${lyricsColor}66` : 'none',
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
                     transform: isCurrent ? 'scale(1.05)' : 'scale(1)',
@@ -935,7 +944,7 @@ export default function App(): JSX.Element {
                 )
               })
             ) : (
-              <p style={{ margin: 'auto', textAlign: 'center', color: '#555566', fontSize: `${lsqFontSize}px` }}>
+              <p style={{ margin: 'auto', textAlign: 'center', color: '#555566', fontSize: `${lyricsFontSize}px` }}>
                 {currentSong?.title || '♪'}
               </p>
             )}
