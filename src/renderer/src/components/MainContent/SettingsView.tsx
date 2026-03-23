@@ -350,7 +350,74 @@ export function SettingsView(): JSX.Element {
         )}
       </div>
 
+      {/* ── Deezer Integration ──────────────────────────────────── */}
+      <div className="settings-card">
+        <div className="settings-card-header">
+          <div className="settings-card-icon" style={{ background: '#ef4444' }}>
+            <Globe size={20} />
+          </div>
+          <div>
+            <h3 className="settings-card-title">Deezer Integration</h3>
+            <p className="settings-card-desc">
+              Connect your Deezer account using an ARL token for online search and high-quality streaming
+            </p>
+          </div>
+          {useSettingsStore.getState().deezerArl && (
+            <div className="lastfm-status-badge connected">
+              <CheckCircle size={14} />
+              <span>Connected</span>
+            </div>
+          )}
+        </div>
+
+        <div className="settings-form">
+          <div className="settings-form-row">
+            <label className="settings-label">
+              Deezer ARL Token
+              <a
+                href="#"
+                className="settings-link"
+                onClick={(e) => {
+                  e.preventDefault()
+                  window.api.shellOpenExternal('https://github.com/nondanee/deezer-arl-guide/blob/master/README.md')
+                }}
+              >
+                How to get? <ExternalLink size={11} />
+              </a>
+            </label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                className="settings-input"
+                type="password"
+                placeholder="Paste your ARL here..."
+                value={useSettingsStore.getState().deezerArl}
+                onChange={(e) => useSettingsStore.getState().setDeezerArl(e.target.value)}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {useSettingsStore.getState().deezerArl && (
+                <button
+                  className="settings-disconnect-btn"
+                  style={{ margin: 0, padding: '0 16px' }}
+                  onClick={() => {
+                    if (window.confirm('Clear Deezer ARL?')) {
+                      useSettingsStore.getState().setDeezerArl('')
+                    }
+                  }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+          <p style={{ fontSize: 11, color: '#666', marginTop: 8 }}>
+            ARL tokens are stored locally on your machine.
+          </p>
+        </div>
+      </div>
+
       {/* ── How it works ──────────────────────────────────────────── */}
+
       <div className="settings-info-card">
         <h4>How it works?</h4>
         <ul>

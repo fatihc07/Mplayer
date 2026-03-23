@@ -7,6 +7,11 @@ const api = {
     ipcRenderer.invoke('library:getSongs', opts),
   getTotalSongs: (search?: string) =>
     ipcRenderer.invoke('library:getTotalSongs', search),
+  
+  // Deezer
+  deezerSearch: (query: string) => ipcRenderer.invoke('deezer:search', query),
+  deezerGetStreamUrl: (trackId: string, arl: string) => ipcRenderer.invoke('deezer:getStreamUrl', trackId, arl),
+
   getTrending: () => ipcRenderer.invoke('library:getTrending'),
   getRecent: () => ipcRenderer.invoke('library:getRecent'),
   getArtists: () => ipcRenderer.invoke('library:getArtists'),

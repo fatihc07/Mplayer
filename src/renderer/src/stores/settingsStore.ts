@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-interface LastFmState {
+interface SettingsState {
   connected: boolean
   username: string
   apiKey: string
@@ -8,6 +8,7 @@ interface LastFmState {
   isAuthenticating: boolean
   authError: string | null
 
+  deezerArl: string
   lockPlaybar: boolean
   lyricsFontSize: number
   lyricsColor: string
@@ -18,12 +19,13 @@ interface LastFmState {
   setLyricsColor: (v: string) => void
   setAutoMiniOnMinimize: (v: boolean) => void
   setLastMiniMode: (v: string) => void
+  setDeezerArl: (v: string) => void
   loadStatus: () => Promise<void>
   authenticate: (apiKey: string, apiSecret: string, username: string, password: string) => Promise<boolean>
   disconnect: () => Promise<void>
 }
 
-export const useSettingsStore = create<LastFmState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set) => ({
   connected: false,
   username: '',
   apiKey: '',
@@ -31,6 +33,7 @@ export const useSettingsStore = create<LastFmState>((set) => ({
   isAuthenticating: false,
   authError: null,
 
+  deezerArl: '',
   lockPlaybar: false,
   lyricsFontSize: 20,
   lyricsColor: '#ffffff',
@@ -56,6 +59,10 @@ export const useSettingsStore = create<LastFmState>((set) => ({
     set({ lastMiniMode: v })
     window.api.setSetting('lastMiniMode', v)
   },
+  setDeezerArl: (v: string) => {
+    set({ deezerArl: v })
+    window.api.setSetting('deezerArl', v)
+  },
   loadStatus: async () => {
     const status = await window.api.lastfmGetStatus()
     const lock = await window.api.getSetting('lockPlaybar')
@@ -63,6 +70,7 @@ export const useSettingsStore = create<LastFmState>((set) => ({
     const fcolor = await window.api.getSetting('lyricsColor')
     const autoMini = await window.api.getSetting('autoMiniOnMinimize')
     const lastM = await window.api.getSetting('lastMiniMode')
+    const arl = await window.api.getSetting('deezerArl')
     set({
       connected: status.connected,
       username: status.username,
@@ -72,7 +80,8 @@ export const useSettingsStore = create<LastFmState>((set) => ({
       lyricsFontSize: fsize ? Number(fsize) : 20,
       lyricsColor: fcolor ?? '#ffffff',
       autoMiniOnMinimize: !!autoMini,
-      lastMiniMode: (lastM as string) ?? 'default'
+      lastMiniMode: (lastM as string) ?? 'default',
+      deezerArl: (arl as string) ?? ''
     })
   },
 
@@ -93,3 +102,4 @@ export const useSettingsStore = create<LastFmState>((set) => ({
     set({ connected: false, username: '', authError: null })
   }
 }))
+

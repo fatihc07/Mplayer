@@ -90,3 +90,5 @@ export type ViewType =
   | 'wrapped'
   | 'replay'
   | 'duplicates'
+  | 'deezer'
+

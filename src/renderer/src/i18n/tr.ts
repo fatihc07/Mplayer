@@ -139,5 +139,7 @@ export const tr = {
   played: 'Dinlenenler',
   more: 'Daha Fazla',
   emptyLibrary: 'Müzik kütüphanesi boş',
-  addFolderHint: 'Başlamak için sol alttaki "Klasör Ekle"yi kullan'
+  addFolderHint: 'Başlamak için sol alttaki "Klasör Ekle"yi kullan',
+  deezer: 'Deezer'
 }
+

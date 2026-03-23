@@ -12,6 +12,7 @@ import { VersionsView } from './VersionsView'
 import { WrappedView } from './WrappedView'
 import { ReplayView } from './ReplayView'
 import { DuplicatesView } from './DuplicatesView'
+import { DeezerView } from './DeezerView'
 
 export function MainContent(): JSX.Element {
   const { currentView } = useLibraryStore()
@@ -24,7 +25,9 @@ export function MainContent(): JSX.Element {
       {currentView === 'history'    && <HistoryView />}
       {currentView === 'like'       && <FavoritesView />}
       {currentView === 'playlists'  && <PlaylistsView />}
+      {currentView === 'deezer'     && <DeezerView />}
       {currentView === 'settings'   && <SettingsView />}
+
       {currentView === 'folders'    && <FoldersView />}
       {currentView === 'stats'      && <StatsView />}
       {currentView === 'versions'   && <VersionsView />}

@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   TrendingUp, Library, History,
   Heart, FolderPlus, FolderOpen, Headphones, RotateCcw, Settings, ListMusic, BarChart3, GitBranch,
-  Sparkles, Copy, GripVertical, Eye, EyeOff, Repeat
+  Sparkles, Copy, GripVertical, Eye, EyeOff, Repeat, Globe
 } from 'lucide-react'
 
 interface NavItem {
@@ -23,6 +23,7 @@ const ALL_ITEMS: NavItem[] = [
   { id: 'playlists',  labelKey: 'playlists',  Icon: ListMusic },
   { id: 'wrapped',    labelKey: 'wrapped',    Icon: Sparkles },
   { id: 'replay',     labelKey: 'replay',     Icon: Repeat },
+  { id: 'deezer',     labelKey: 'deezer',     Icon: Globe },
   { id: 'duplicates', labelKey: 'duplicates', Icon: Copy },
   { id: 'stats',      labelKey: 'stats',      Icon: BarChart3 },
   { id: 'folders',    labelKey: 'folders',    Icon: FolderOpen },

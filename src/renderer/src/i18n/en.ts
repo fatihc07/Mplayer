@@ -141,5 +141,7 @@ export const en: typeof tr = {
   played: 'Played',
   more: 'More',
   emptyLibrary: 'Music library is empty',
-  addFolderHint: 'Use "Add Folder" in the bottom left to get started'
+  addFolderHint: 'Use "Add Folder" in the bottom left to get started',
+  deezer: 'Deezer'
 }
+

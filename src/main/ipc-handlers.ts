@@ -40,9 +40,15 @@ import {
   updateNowPlaying as lfmNowPlaying, scrobble as lfmScrobble
 } from './lastfm'
 import { getLyrics, searchLrclibAll } from './lyrics'
+import { searchDeezer, getDeezerStreamUrl } from './deezer'
 
 export function setupIpcHandlers(): void {
+  // ── Deezer ────────────────────────────────────────────────────────────────
+  ipcMain.handle('deezer:search', (_, query: string) => searchDeezer(query))
+  ipcMain.handle('deezer:getStreamUrl', (_, trackId: string, arl: string) => getDeezerStreamUrl(trackId, arl))
+
   // ── App info ─────────────────────────────────────────────────────────────────
+
   ipcMain.handle('app:getVersion', () => app.getVersion())
 
   // ── Library queries ────────────────────────────────────────────────────────

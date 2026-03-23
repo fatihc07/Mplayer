@@ -1,0 +1,154 @@
+/* Deezer Dashboard (2nd Image Style) */
+.dz-dash {
+  padding: 30px;
+  background: var(--bg-main);
+  min-height: 100%;
+  animation: fadeIn 0.4s ease;
+}
+
+.dz-search-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s;
+}
+.dz-search-bar:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #F43F5E;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+}
+.dz-search-prefix { display: flex; align-items: center; gap: 10px; }
+.dz-badge {
+  background: #F43F5E;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.dz-search-input {
+
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 16px;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.dz-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+}
+
+@media (max-width: 1200px) {
+  .dz-grid-layout { grid-template-columns: 1fr; }
+}
+
+/* Sections */
+.dz-section { margin-bottom: 40px; }
+.dz-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.dz-section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Albums Horizontal */
+.dz-albums-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 15px;
+  scrollbar-width: thin;
+}
+.dz-album-card {
+  min-width: 180px;
+  background: rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 16px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.dz-album-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.07); }
+.dz-album-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+.dz-album-name { display: block; font-weight: 700; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dz-album-artist { font-size: 12px; color: #999; }
+
+/* Artists Row */
+.dz-artists-row {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+.dz-artist-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  min-width: 100px;
+  cursor: pointer;
+}
+.dz-artist-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  object-fit: cover;
+  transition: transform 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.dz-artist-item:hover .dz-artist-pic { transform: scale(1.05); border: 2px solid #F43F5E; }
+.dz-artist-name { font-weight: 600; color: #fff; font-size: 13px; }
+
+/* Tracks Column (Right Side like Queue) */
+.dz-tracks-col {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 24px;
+  height: fit-content;
+}
+.dz-track-row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 12px;
+}
+.dz-track-row:hover { background: rgba(244, 63, 94, 0.1); }
+.dz-track-row.playing { background: #F43F5E; }
+.dz-track-row.playing .dz-track-name, 
+.dz-track-row.playing .dz-track-artist,
+.dz-track-row.playing .dz-track-dur { color: #fff !important; }
+
+.dz-track-art { width: 44px; height: 44px; border-radius: 8px; }
+.dz-track-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.dz-track-name { font-weight: 700; color: #fff; font-size: 14px; }
+.dz-track-artist { font-size: 12px; color: #999; }
+.dz-track-dur { font-size: 11px; color: #666; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
